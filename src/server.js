@@ -11,4 +11,4 @@ mongoose.connect("mongodb+srv://root:root@cluster-x26u1.gcp.mongodb.net/test?ret
     useUnifiedTopology: true
 });
 
-app.listen(process.env.PORT || 3434);
+app.listen(process.env.PORT || 3535);
