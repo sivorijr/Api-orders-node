@@ -1,14 +1,18 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const app = express();
 
-app.use(bodyParser.json());
-app.use(require("./routes"));
-
-mongoose.connect("mongodb+srv://root:root@cluster-x26u1.gcp.mongodb.net/test?retryWrites=true&w=majority", {
+mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
 
-app.listen(process.env.PORT || 3535);
+app.use(cors());
+app.use(bodyParser.json());
+app.use(require("./routes"));
+
+app.listen(process.env.PORT || 3333);
