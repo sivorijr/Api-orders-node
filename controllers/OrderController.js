@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const axios = require("axios");
 const Order = require("../models/Order");
 
 class OrderController {
@@ -7,6 +8,16 @@ class OrderController {
             path: "files",
             options: { sort: { createdAt: -1 } }
         });
+
+        orders.forEach((order, key) => {
+            axios.get(process.env.APP_URL + "/customer/" + order.customerID).then((response) => {
+                orders[key].customerID = response.data;
+            });
+    
+            axios.get(process.env.APP_URL + "/book/" + order.bookID).then((response) => {
+                orders[key].bookID = response.data;
+            });
+        })
 
         return res.json(orders);
     }
@@ -27,6 +38,14 @@ class OrderController {
         const order = await Order.findById(req.params.id).populate({
             path: "files",
             options: { sort: { createdAt: -1 } }
+        });
+
+        axios.get(process.env.APP_URL + "/customer/" + order.customerID).then((response) => {
+            order.customerID = response.data;
+        });
+
+        axios.get(process.env.APP_URL + "/book/" + order.bookID).then((response) => {
+            order.bookID = response.data;
         });
 
         return res.json(order);
