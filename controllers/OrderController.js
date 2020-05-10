@@ -5,16 +5,16 @@ const Order = require("../models/Order");
 class OrderController {
     async getAll(req, res) {
         const orders = await Order.find().populate({
-            path: "files",
+            path: "data",
             options: { sort: { createdAt: -1 } }
         });
 
         orders.forEach((order, key) => {
-            axios.get(process.env.APP_URL + "/customer/" + order.customerID).then((response) => {
+            axios.get(process.env.API_CUSTOMER_URL + "/customer/" + order.customerID).then((response) => {
                 orders[key].customerID = response.data;
             });
     
-            axios.get(process.env.APP_URL + "/book/" + order.bookID).then((response) => {
+            axios.get(process.env.API_BOOK_URL + "/book/" + order.bookID).then((response) => {
                 orders[key].bookID = response.data;
             });
         })
@@ -35,17 +35,26 @@ class OrderController {
     }
 
     async get(req, res) {
-        const order = await Order.findById(req.params.id).populate({
-            path: "files",
-            options: { sort: { createdAt: -1 } }
-        });
+        const order = await Order.findById(req.params.id).then(async (res) => {
+            let answer = {
+                "_id": res._id,
+                "customerID": [],
+                "bookID": [],
+                "deliveryDate": res.deliveryDate,
+                "createdAt": res.createdAt,
+                "updatedAt": res.updatedAt,
+                "__v": res.__v
+            }
 
-        axios.get(process.env.APP_URL + "/customer/" + order.customerID).then((response) => {
-            order.customerID = response.data;
-        });
+            await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID).then((response) => {
+                answer.customerID = response.data;
+            });
+    
+            await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID).then((response) => {
+                answer.bookID = response.data;
+            });
 
-        axios.get(process.env.APP_URL + "/book/" + order.bookID).then((response) => {
-            order.bookID = response.data;
+            return answer;
         });
 
         return res.json(order);
@@ -54,7 +63,7 @@ class OrderController {
     async delete(req, res) {
         await Order.findByIdAndDelete(req.params.id);
 
-        return res.send("Customer deleted with success");
+        return res.send("Order deleted with success");
     }
 }
 
