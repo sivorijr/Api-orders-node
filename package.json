@@ -1,4 +1,8 @@
-{
+{ 
+  "name": "Api-orders-node",
+  "description": "Orders API",
+  "version": "1.0.0",
+  "main": "index.js",
   "dependencies": {
     "axios": "^0.19.2",
     "body-parser": "^1.19.0",
@@ -11,6 +15,6 @@
   },
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js --unhandled-rejections=strict"
+    "start": "node src/server.js"
   }
 }
