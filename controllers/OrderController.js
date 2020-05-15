@@ -4,36 +4,40 @@ const Order = require("../models/Order");
 
 class OrderController {
     async getAll(req, res) {
-        const orders = await Order.find().populate({
-            path: "data",
-            options: { sort: { createdAt: -1 } }
-        })
+        try {
+            const orders = await Order.find().populate({
+                path: "data",
+                options: { sort: { createdAt: -1 } }
+            })
 
-        let arr = [];
+            let arr = [];
 
-        for (var i = 0; i < orders.length; i++) {
-            let answerOrder = {
-                "_id": orders[i]._id,
-                "customerID": [],
-                "bookID": [],
-                "deliveryDate": orders[i].deliveryDate,
-                "createdAt": orders[i].createdAt,
-                "updatedAt": orders[i].updatedAt,
-                "__v": orders[i].__v
+            for (var i = 0; i < orders.length; i++) {
+                let answerOrder = {
+                    "_id": orders[i]._id,
+                    "customerID": [],
+                    "bookID": [],
+                    "deliveryDate": orders[i].deliveryDate,
+                    "createdAt": orders[i].createdAt,
+                    "updatedAt": orders[i].updatedAt,
+                    "__v": orders[i].__v
+                }
+        
+                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID).then(response => {
+                    answerOrder.customerID = response.data;
+                });
+        
+                await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID).then(response => {
+                    answerOrder.bookID = response.data;
+                });
+        
+                arr.push(answerOrder);
             }
-    
-            await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID).then(response => {
-                answerOrder.customerID = response.data;
-            });
-    
-            await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID).then(response => {
-                answerOrder.bookID = response.data;
-            });
-    
-            arr.push(answerOrder);
-        }
 
-        return res.json(arr);
+            return res.json(arr);
+        } catch (err) {
+            next(err);
+        }
     }
 
     async set(req, res) {
