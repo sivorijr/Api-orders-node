@@ -7,19 +7,33 @@ class OrderController {
         const orders = await Order.find().populate({
             path: "data",
             options: { sort: { createdAt: -1 } }
-        });
-
-        orders.forEach((order, key) => {
-            axios.get(process.env.API_CUSTOMER_URL + "/customer/" + order.customerID).then((response) => {
-                orders[key].customerID = response.data;
-            });
-    
-            axios.get(process.env.API_BOOK_URL + "/book/" + order.bookID).then((response) => {
-                orders[key].bookID = response.data;
-            });
         })
 
-        return res.json(orders);
+        let arr = [];
+
+        for (var i = 0; i < orders.length; i++) {
+            let answerOrder = {
+                "_id": orders[i]._id,
+                "customerID": [],
+                "bookID": [],
+                "deliveryDate": orders[i].deliveryDate,
+                "createdAt": orders[i].createdAt,
+                "updatedAt": orders[i].updatedAt,
+                "__v": orders[i].__v
+            }
+    
+            await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID).then(response => {
+                answerOrder.customerID = response.data;
+            });
+    
+            await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID).then(response => {
+                answerOrder.bookID = response.data;
+            });
+    
+            arr.push(answerOrder);
+        }
+
+        return res.json(arr);
     }
 
     async set(req, res) {
@@ -35,7 +49,7 @@ class OrderController {
     }
 
     async get(req, res) {
-        const order = await Order.findById(req.params.id).then(async (res) => {
+        const order = await Order.findById(req.params.id).then(async res => {
             let answer = {
                 "_id": res._id,
                 "customerID": [],
@@ -46,11 +60,11 @@ class OrderController {
                 "__v": res.__v
             }
 
-            await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID).then((response) => {
+            await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID).then(response => {
                 answer.customerID = response.data;
             });
     
-            await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID).then((response) => {
+            await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID).then(response => {
                 answer.bookID = response.data;
             });
 
