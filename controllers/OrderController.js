@@ -5,10 +5,13 @@ const Order = require("../models/Order");
 class OrderController {
     async getAll(req, res) {
         try {
+            console.log(">>>>>>>>>>>>>>>> entrou");
             const orders = await Order.find().populate({
                 path: "data",
                 options: { sort: { createdAt: -1 } }
             })
+
+            console.log(">>>>>>>>>>>>>>>> orders: " + orders);
 
             let arr = [];
 
@@ -25,14 +28,17 @@ class OrderController {
         
                 await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID).then(response => {
                     answerOrder.customerID = response.data;
+                    console.log(">>>>>>>>>>>>>>>> customer: " + response.data);
                 });
         
                 await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID).then(response => {
                     answerOrder.bookID = response.data;
+                    console.log(">>>>>>>>>>>>>>>> book: " + response.data);
                 });
         
                 arr.push(answerOrder);
             }
+            console.log(">>>>>>>>>>>>>>>> arr: " + arr);
 
             return res.json(arr);
         } catch (err) {
@@ -41,47 +47,59 @@ class OrderController {
     }
 
     async set(req, res) {
-        var newOrder = {
-            customerID: mongoose.Types.ObjectId(req.body.customerID),
-            bookID: mongoose.Types.ObjectId(req.body.bookID),
-            deliveryDate: req.body.deliveryDate
+        try {
+            var newOrder = {
+                customerID: mongoose.Types.ObjectId(req.body.customerID),
+                bookID: mongoose.Types.ObjectId(req.body.bookID),
+                deliveryDate: req.body.deliveryDate
+            }
+
+            const oreder = await Order.create(newOrder);
+
+            return res.json(oreder);
+        } catch (err) {
+            next(err);
         }
-
-        const oreder = await Order.create(newOrder);
-
-        return res.json(oreder);
     }
 
     async get(req, res) {
-        const order = await Order.findById(req.params.id).then(async res => {
-            let answer = {
-                "_id": res._id,
-                "customerID": [],
-                "bookID": [],
-                "deliveryDate": res.deliveryDate,
-                "createdAt": res.createdAt,
-                "updatedAt": res.updatedAt,
-                "__v": res.__v
-            }
+        try {
+            const order = await Order.findById(req.params.id).then(async res => {
+                let answer = {
+                    "_id": res._id,
+                    "customerID": [],
+                    "bookID": [],
+                    "deliveryDate": res.deliveryDate,
+                    "createdAt": res.createdAt,
+                    "updatedAt": res.updatedAt,
+                    "__v": res.__v
+                }
 
-            await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID).then(response => {
-                answer.customerID = response.data;
+                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID).then(response => {
+                    answer.customerID = response.data;
+                });
+        
+                await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID).then(response => {
+                    answer.bookID = response.data;
+                });
+
+                return answer;
             });
-    
-            await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID).then(response => {
-                answer.bookID = response.data;
-            });
 
-            return answer;
-        });
-
-        return res.json(order);
+            return res.json(order);
+        } catch (err) {
+            next(err);
+        }
     }
 
     async delete(req, res) {
-        await Order.findByIdAndDelete(req.params.id);
+        try {
+            await Order.findByIdAndDelete(req.params.id);
 
-        return res.send("Order deleted with success");
+            return res.send("Order deleted with success");
+        } catch (err) {
+            next(err);
+        }
     }
 }
 
