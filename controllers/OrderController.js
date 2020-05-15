@@ -42,7 +42,7 @@ class OrderController {
 
             return res.json(arr);
         } catch (err) {
-            next(err);
+            throw err;
         }
     }
 
@@ -58,7 +58,7 @@ class OrderController {
 
             return res.json(oreder);
         } catch (err) {
-            next(err);
+            throw err;
         }
     }
 
@@ -88,7 +88,7 @@ class OrderController {
 
             return res.json(order);
         } catch (err) {
-            next(err);
+            throw err;
         }
     }
 
@@ -98,7 +98,7 @@ class OrderController {
 
             return res.send("Order deleted with success");
         } catch (err) {
-            next(err);
+            throw err;
         }
     }
 }
