@@ -23,21 +23,21 @@ class OrderController {
                     "__v": orders[i].__v
                 }
         
-                try {
-                    await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID).then(response => {
-                        answerOrder.customerID = response.data;
-                    });
-                } catch (err) {
+                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
+                .then(response => {
+                    answerOrder.customerID = response.data;
+                })
+                .catch(err => {
                     throw err;
-                }
+                });
         
-                try {
-                    await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID).then(response => {
-                        answerOrder.bookID = response.data;
-                    });
-                } catch (err) {
+                await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
+                .then(response => {
+                    answerOrder.bookID = response.data;
+                })
+                .catch(err => {
                     throw err;
-                }
+                });
         
                 arr.push(answerOrder);
             }
