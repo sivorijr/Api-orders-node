@@ -5,13 +5,10 @@ const Order = require("../models/Order");
 class OrderController {
     async getAll(req, res) {
         try {
-            console.log(">>>>>>>>>>>>>>>> entrou");
             const orders = await Order.find().populate({
                 path: "data",
                 options: { sort: { createdAt: -1 } }
             })
-
-            console.log(">>>>>>>>>>>>>>>> orders: " + orders);
 
             let arr = [];
 
@@ -26,19 +23,24 @@ class OrderController {
                     "__v": orders[i].__v
                 }
         
-                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID).then(response => {
-                    answerOrder.customerID = response.data;
-                    console.log(">>>>>>>>>>>>>>>> customer: " + response.data);
-                });
+                try {
+                    await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID).then(response => {
+                        answerOrder.customerID = response.data;
+                    });
+                } catch (err) {
+                    throw err;
+                }
         
-                await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID).then(response => {
-                    answerOrder.bookID = response.data;
-                    console.log(">>>>>>>>>>>>>>>> book: " + response.data);
-                });
+                try {
+                    await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID).then(response => {
+                        answerOrder.bookID = response.data;
+                    });
+                } catch (err) {
+                    throw err;
+                }
         
                 arr.push(answerOrder);
             }
-            console.log(">>>>>>>>>>>>>>>> arr: " + arr);
 
             return res.json(arr);
         } catch (err) {
