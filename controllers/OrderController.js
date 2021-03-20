@@ -23,21 +23,37 @@ class OrderController {
                     "__v": orders[i].__v
                 }
         
-                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
-                .then(response => {
-                    answerOrder.customerID = response.data;
-                })
-                .catch(err => {
-                    throw err;
-                });
+                answerOrder.customerID = async () => {
+                    try {
+                        return await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID);
+                    } catch (err) {
+                        throw err;
+                    }
+                }
+
+                answerOrder.bookID = async () => {
+                    try {
+                        return await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID);
+                    } catch (err) {
+                        throw err;
+                    }
+                }
+
+                // await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
+                // .then(response => {
+                //     answerOrder.customerID = response.data;
+                // })
+                // .catch(err => {
+                //     throw err;
+                // });
         
-                await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
-                .then(response => {
-                    answerOrder.bookID = response.data;
-                })
-                .catch(err => {
-                    throw err;
-                });
+                // await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
+                // .then(response => {
+                //     answerOrder.bookID = response.data;
+                // })
+                // .catch(err => {
+                //     throw err;
+                // });
         
                 arr.push(answerOrder);
             }
