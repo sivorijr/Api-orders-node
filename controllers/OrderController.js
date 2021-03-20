@@ -23,13 +23,25 @@ class OrderController {
                     "__v": orders[i].__v
                 }
         
-                answerOrder.customerID = async () => {
-                    try {
-                        return await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID);
-                    } catch (err) {
+                try {
+                    let teste;
+                    await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
+                    .then(response => {
+                        try {
+                            teste = response.data;
+                        } catch (err) {
+                            throw err
+                        }
+                    })
+                    .catch(err => {
                         throw err;
-                    }
+                    });
+                } catch (err) {
+                    throw err
                 }
+
+                console.log(teste);
+                answerOrder.customerID = teste;
 
                 answerOrder.bookID = async () => {
                     try {
