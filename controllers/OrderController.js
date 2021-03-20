@@ -22,50 +22,22 @@ class OrderController {
                     "updatedAt": orders[i].updatedAt,
                     "__v": orders[i].__v
                 }
+
+                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
+                .then(({data}) => {
+                    answerOrder.customerID = data;
+                })
+                .catch(err => {
+                    throw err;
+                });
         
-                try {
-                    let teste;
-                    await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
-                    .then(response => {
-                        try {
-                            teste = response.data;
-                        } catch (err) {
-                            throw err
-                        }
-                    })
-                    .catch(err => {
-                        throw err;
-                    });
-                } catch (err) {
-                    throw err
-                }
-
-                console.log(teste);
-                answerOrder.customerID = teste;
-
-                answerOrder.bookID = async () => {
-                    try {
-                        return await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID);
-                    } catch (err) {
-                        throw err;
-                    }
-                }
-
-                // await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
-                // .then(response => {
-                //     answerOrder.customerID = response.data;
-                // })
-                // .catch(err => {
-                //     throw err;
-                // });
-        
-                // await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
-                // .then(response => {
-                //     answerOrder.bookID = response.data;
-                // })
-                // .catch(err => {
-                //     throw err;
-                // });
+                await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
+                .then(({data}) => {
+                    answerOrder.bookID = data;
+                })
+                .catch(err => {
+                    throw err;
+                });
         
                 arr.push(answerOrder);
             }
