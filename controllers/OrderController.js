@@ -5,48 +5,28 @@ const Order = require("../models/Order");
 class OrderController {
     async getAll(req, res) {
         try {
-            const orders = await Order.find().populate({
-                path: "data",
-                options: { sort: { createdAt: -1 } }
+            const orders = await Order.find();
+            const ordersDetails = orders.map(order => {
+                return new Promise(async (resolve, reject) => {
+                    const customer = await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + order.customerID)
+                    const book = await axios.get(process.env.API_BOOK_URL + "/book/" + order.bookID)
+
+                    resolve({
+                        "_id": order._id,
+                        "customer": customer.data,
+                        "book": book.data,
+                        "deliveryDate": order.deliveryDate,
+                        "createdAt": order.createdAt,
+                        "updatedAt": order.updatedAt,
+                        "_v": order._v
+                    })
+                });
             })
 
-            let arr = [];
-
-            for (let i = 0; i < orders.length; i++) {
-                let answerOrder = {
-                    "_id": orders[i]._id,
-                    "customerID": [],
-                    "bookID": [],
-                    "deliveryDate": orders[i].deliveryDate,
-                    "createdAt": orders[i].createdAt,
-                    "updatedAt": orders[i].updatedAt,
-                    "__v": orders[i].__v
-                }
-
-                // await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
-                await axios.get(process.env.API_CUSTOMER_URL + "/health")
-                .then(response => {
-                    answerOrder.customerID = response.data;
-                })
-                .catch(err => {
-                    throw err;
-                });
-        
-                // await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
-                await axios.get(process.env.API_BOOK_URL + "/health")
-                .then(response => {
-                    answerOrder.bookID = response.data;
-                })
-                .catch(err => {
-                    throw err;
-                });
-        
-                arr.push(answerOrder);
-            }
-
-            return res.json(arr);
+            return Promise.all(ordersDetails).then(results => res.json(results))
         } catch (err) {
-            throw err;
+            console.log(err);
+            res.status(500).send(err);
         }
     }
 
