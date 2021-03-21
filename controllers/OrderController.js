@@ -79,7 +79,8 @@ class OrderController {
                     "__v": res.__v
                 }
 
-                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID)
+                // await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID)
+                await axios.get(process.env.API_CUSTOMER_URL + "/health")
                 .then(response => {
                     answer.customerID = response.data;
                 })
@@ -87,7 +88,8 @@ class OrderController {
                     throw err;
                 });
         
-                await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID)
+                // await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID)
+                await axios.get(process.env.API_BOOK_URL + "/health")
                 .then(response => {
                     answer.bookID = response.data;
                 })
