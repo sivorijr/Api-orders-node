@@ -5,28 +5,40 @@ const Order = require("../models/Order");
 class OrderController {
     async getAll(req, res) {
         try {
-            const orders = await Order.find();
-            const ordersDetails = orders.map(order => {
-                return new Promise(async (resolve, reject) => {
-                    const customer = await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + order.customerID)
-                    const book = await axios.get(process.env.API_BOOK_URL + "/book/" + order.bookID)
-
-                    resolve({
-                        "_id": order._id,
-                        "customer": customer.data,
-                        "book": book.data,
-                        "deliveryDate": order.deliveryDate,
-                        "createdAt": order.createdAt,
-                        "updatedAt": order.updatedAt,
-                        "_v": order._v
-                    })
-                });
+            const orders = await Order.find().populate({
+                path: "data",
+                options: { sort: { createdAt: -1 } }
             })
 
-            return Promise.all(ordersDetails).then(results => res.json(results))
+            let arr = [];
+
+            for (let i = 0; i < orders.length; i++) {
+                let answerOrder = {
+                    "_id": orders[i]._id,
+                    "customerID": [],
+                    "bookID": [],
+                    "deliveryDate": orders[i].deliveryDate,
+                    "createdAt": orders[i].createdAt,
+                    "updatedAt": orders[i].updatedAt,
+                    "__v": orders[i].__v
+                }
+
+                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
+                .then(response => {
+                    answerOrder.customerID = response.data;
+                });
+        
+                await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
+                .then(response => {
+                    answerOrder.bookID = response.data;
+                });
+        
+                arr.push(answerOrder);
+            }
+
+            return res.json(arr);
         } catch (err) {
-            console.log(err);
-            res.status(500).send(err);
+            throw err;
         }
     }
 
@@ -59,22 +71,12 @@ class OrderController {
                     "__v": res.__v
                 }
 
-                // await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID)
-                await axios.get(process.env.API_CUSTOMER_URL + "/health")
-                .then(response => {
+                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID).then(response => {
                     answer.customerID = response.data;
-                })
-                .catch(err => {
-                    throw err;
                 });
         
-                // await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID)
-                await axios.get(process.env.API_BOOK_URL + "/health")
-                .then(response => {
+                await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID).then(response => {
                     answer.bookID = response.data;
-                })
-                .catch(err => {
-                    throw err;
                 });
 
                 return answer;
