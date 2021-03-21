@@ -79,12 +79,20 @@ class OrderController {
                     "__v": res.__v
                 }
 
-                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID).then(response => {
+                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + res.customerID)
+                .then(response => {
                     answer.customerID = response.data;
+                })
+                .catch(err => {
+                    throw err;
                 });
         
-                await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID).then(response => {
+                await axios.get(process.env.API_BOOK_URL + "/book/" + res.bookID)
+                .then(response => {
                     answer.bookID = response.data;
+                })
+                .catch(err => {
+                    throw err;
                 });
 
                 return answer;
