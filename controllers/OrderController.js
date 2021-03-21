@@ -23,7 +23,8 @@ class OrderController {
                     "__v": orders[i].__v
                 }
 
-                await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
+                // await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
+                await axios.get(process.env.API_CUSTOMER_URL + "/health")
                 .then(response => {
                     answerOrder.customerID = response.data;
                 })
@@ -32,12 +33,13 @@ class OrderController {
                 });
         
                 // await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
-                // .then(response => {
-                //     answerOrder.bookID = response.data;
-                // })
-                // .catch(err => {
-                //     throw err;
-                // });
+                await axios.get(process.env.API_BOOK_URL + "/health")
+                .then(response => {
+                    answerOrder.bookID = response.data;
+                })
+                .catch(err => {
+                    throw err;
+                });
         
                 arr.push(answerOrder);
             }
