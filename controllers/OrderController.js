@@ -12,7 +12,7 @@ class OrderController {
 
             let arr = [];
 
-            for (var i = 0; i < orders.length; i++) {
+            for (let i = 0; i < orders.length; i++) {
                 let answerOrder = {
                     "_id": orders[i]._id,
                     "customerID": [],
@@ -24,20 +24,20 @@ class OrderController {
                 }
 
                 await axios.get(process.env.API_CUSTOMER_URL + "/customer/" + orders[i].customerID)
-                .then(({data}) => {
-                    answerOrder.customerID = data;
+                .then(response => {
+                    answerOrder.customerID = response.data;
                 })
                 .catch(err => {
                     throw err;
                 });
         
-                await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
-                .then(({data}) => {
-                    answerOrder.bookID = data;
-                })
-                .catch(err => {
-                    throw err;
-                });
+                // await axios.get(process.env.API_BOOK_URL + "/book/" + orders[i].bookID)
+                // .then(response => {
+                //     answerOrder.bookID = response.data;
+                // })
+                // .catch(err => {
+                //     throw err;
+                // });
         
                 arr.push(answerOrder);
             }
