@@ -5,7 +5,6 @@ const routes = express.Router();
 const OrderController = require("../controllers/OrderController");
 
 routes.get("/", (req, res) => { return res.send("ORDERS API by Sivori Junior") });
-routes.get("/health", (req, res) => { return res.send("OK") });
 
 routes.get("/orders", OrderController.getAll);
 
