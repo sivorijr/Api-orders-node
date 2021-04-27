@@ -15,11 +15,11 @@
  
 Base URL - https://api-orders-node.herokuapp.com/
 
-GET - /orders - Get all orders<br>
-GET - /order/:id - Get order of specific id<br>
-DELETE - /order/:id - Delete order of specific id<br>
+GET - "/orders" - Get all orders<br>
+GET - "/order/:id" - Get order of specific id<br>
+DELETE - "/order/:id" - Delete order of specific id<br>
 
-POST - /order - Create new order<br>
+POST - "/order" - Create new order<br>
 order = {<br>
 &emsp;customerID: {
 &emsp;&emsp;type: String,
