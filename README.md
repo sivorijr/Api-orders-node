@@ -21,17 +21,17 @@ DELETE - "/order/:id" - Delete order of specific id<br>
 
 POST - "/order" - Create new order<br>
 order = {<br>
-&emsp;customerID: {
-&emsp;&emsp;type: String,
-&emsp;&emsp;require: true
+&emsp;customerID: {<br>
+&emsp;&emsp;type: String,<br>
+&emsp;&emsp;require: true<br>
 &emsp;},<br>
-&emsp;bookID: {
-&emsp;&emsp;type: String,
-&emsp;&emsp;require: true
+&emsp;bookID: {<br>
+&emsp;&emsp;type: String,<br>
+&emsp;&emsp;require: true<br>
 &emsp;},<br>
-&emsp;deliveryDate: {
-&emsp;&emsp;type: Date,
-&emsp;&emsp;require: false
+&emsp;deliveryDate: {<br>
+&emsp;&emsp;type: Date,<br>
+&emsp;&emsp;require: false<br>
 &emsp;}<br>
 }
  
